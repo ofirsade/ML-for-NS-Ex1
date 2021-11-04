@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 # Task 1 - Load Data
 
 col_names = ['lcavol', 'lweight', 'age', 'lbph', 'svi', 'lcp', 'gleason', 'pgg45', 'lpsa']
-file = "/Users/ofirsade/Desktop/UNI/Masters/Courses/למידה חישובית למדעי המוח/HW/prostate_data.csv"
+file = "prostate_data.csv"
 df = pd.read_csv(file, usecols = col_names)
 
 # Task 2 - Scatter Plot of age and lpsa
