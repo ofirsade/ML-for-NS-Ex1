@@ -12,8 +12,8 @@ df = pd.read_csv(file, usecols = col_names)
 # Task 2 - Scatter Plot of age and lpsa
 
 plt.scatter(df['age'], df['lpsa'], marker = 'o')
-plt.xlabel('age')
-plt.ylabel('lpsa')
+plt.xlabel('Age')
+plt.ylabel('Lpsa')
 plt.show()
 
 # Task 3 - Box Whisker plota of lpsa for ages a<60, 60<b<70, 70<c
