@@ -20,7 +20,6 @@ plt.show()
 lim_df = df[['lpsa', 'age']]
 
 age_a_df = lim_df.loc[lim_df['age'] < 60]
-print("AGE A DF:\n", age_a_df)
 figa, axa = plt.subplots()
 axa.set_title('lpsa for ages < 60')
 axa.boxplot(age_a_df['lpsa'])
@@ -41,7 +40,6 @@ ages = df[['age']]
 med_age = np.median(ages)
 comp_col = np.where(df['age'] > med_age, True, False)
 df['age is greater than the median age'] = comp_col
-#print("DF:\n", df)
 
 # Task 5 - Print the indices of the subjects of age > 70
 
