@@ -38,7 +38,7 @@ axc.boxplot(age_c_df['lpsa'])
 
 ages = df[['age']]
 med_age = np.median(ages)
-comp_col = np.where(df['age'] > med_age, True, False)
+comp_col = df['age'] > med_age
 df['age is greater than the median age'] = comp_col
 
 # Task 5 - Print the indices of the subjects of age > 70
