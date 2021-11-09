@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+
 # Task 1 - Load Data
 
 col_names = ['lcavol', 'lweight', 'age', 'lbph', 'svi', 'lcp', 'gleason', 'pgg45', 'lpsa']
@@ -17,6 +17,7 @@ plt.ylabel('Lpsa')
 plt.show()
 
 # Task 3 - Box Whisker plota of lpsa for ages a<60, 60<b<70, 70<c
+
 lim_df = df[['lpsa', 'age']]
 
 age_a_df = lim_df.loc[lim_df['age'] < 60]
@@ -56,8 +57,4 @@ print("\nAverage lpsa of the subjects of age > 70: ", avg_lpsa)
 tmp_df = df.loc[df['age'] > 70]
 df1 = tmp_df.loc[tmp_df['svi'] == 1]
 print("\nRecords for which age > 70 and svi == 1:\n", df1)
-
-
-
-
 
