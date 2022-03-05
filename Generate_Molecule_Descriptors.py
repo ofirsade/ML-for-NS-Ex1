@@ -33,28 +33,9 @@ headers = list(names)
 headers.insert(0, "SMILES")
 
 
-def smiles_to_iupac(smiles):
-    rep = "iupac_name"
-    url = CACTUS.format(smiles, rep)
-    response = requests.get(url)
-    response.raise_for_status()
-    return response.text
-
-name = smiles_to_iupac(smiles[0])
-print(name)
-"""
-iupac_names = []
-for smile in smiles:
-    name = smiles_to_iupac(smile)
-    iupac_names.append(name)
-headers.insert(0, "Names")
-df["Names"] = iupac_names
-""" 
-
-
-file = open('/Users/ofirsade/Desktop/UNI/Masters/Courses/SEMESTER I/למידה חישובית למדעי המוח/HW/Final Project/Molecule_Descriptors1.csv',
+file = open(r'C:\Users\dell\Documents\ML final project\ML-for-NS-Ex1\Molecule_Descriptors.csv',
             'w+', newline='')
-output_path = '/Users/ofirsade/Desktop/UNI/Masters/Courses/SEMESTER I/למידה חישובית למדעי המוח/HW/Final Project/Molecule_Descriptors.csv'
+output_path = r'C:\Users\dell\Documents\ML final project\ML-for-NS-Ex1\Molecule_Descriptors.csv'
 
 df.to_csv(output_path, columns = headers)
 
