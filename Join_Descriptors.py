@@ -21,6 +21,8 @@ df2 = pd.read_excel(input_path2)
 
 result_df = pd.merge(df, df2, how = "left", on = "SMILES")
 
+result_df = pd.get_dummies(result_df, columns=['Odor dilution'])
+
 file = open('/Users/ofirsade/Desktop/UNI/Masters/Courses/SEMESTER I/למידה חישובית למדעי המוח/HW/Final Project/All_Descriptors.xlsx',
             'w+', newline='')
 output_path = '/Users/ofirsade/Desktop/UNI/Masters/Courses/SEMESTER I/למידה חישובית למדעי המוח/HW/Final Project/All_Descriptors.xlsx'
