@@ -37,7 +37,7 @@ for i in range(len(df2)):
     smiles.append(smile)
 
 df2["SMILES"] = smiles
-df2 = df2[["CID", "Odor", "Odor_dilution", "SMILES"]]
+df2 = df2[["CID", "Odor_dilution", "SMILES"]]
 df2 = pd.get_dummies(df2, columns=['Odor_dilution'])
 
 
