@@ -69,7 +69,7 @@ file_y = open(r'C:\Users\dell\Documents\ML final project\ML-for-NS-Ex1\y.xlsx',
             'w+', newline='')
 output_path_y = r'C:\Users\dell\Documents\ML final project\ML-for-NS-Ex1\y.xlsx'
 
-y.to_excel(output_path_y)
+y.to_csv(output_path_y)
 
 file_X = open(r'C:\Users\dell\Documents\ML final project\ML-for-NS-Ex1\X.xlsx',
             'w+', newline='')
