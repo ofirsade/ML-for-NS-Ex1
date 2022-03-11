@@ -6,8 +6,9 @@ input_path_X = r'C:\Users\dell\Documents\ML final project\ML-for-NS-Ex1\X.xlsx'
 input_path_y = r'C:\Users\dell\Documents\ML final project\ML-for-NS-Ex1\y.xlsx'
 X = pd.read_excel(input_path_X, index_col=0)
 y = pd.read_excel(input_path_y, index_col=0)
+y = list(y[0])
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=1)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=1, stratify=y)
 
 # numeric_features = df.select_dtypes(np.float)
 # scaler = StandardScaler()
