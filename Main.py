@@ -38,7 +38,7 @@ X_vis = pca.fit_transform(X_train)
 
 ### Apply the random over-sampling
 ada = ADASYN()
-X_resampled, y_resampled = ada.fit_resample(X_train, y_train)
+X_resampled, y_resampled = ada.fit_resample(X_train, y_train) ### This is the oversampled data that we want to use.
 print(sorted(Counter(y_resampled).items()))
 X_res_vis = pca.transform(X_resampled)
 
