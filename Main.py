@@ -9,6 +9,19 @@ from imblearn.over_sampling import ADASYN
 from collections import Counter
 from boruta import BorutaPy
 from sklearn.ensemble import RandomForestRegressor
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.neighbors import KNeighborsClassifier
+from xgboost import XGBClassifier
+from sklearn.metrics import *
 pd.options.mode.chained_assignment = None
 
 
@@ -33,25 +46,75 @@ scaler.fit(X_train.loc[:, numeric_features.columns])
 X_train.loc[:, numeric_features.columns] = scaler.transform(X_train.loc[:, numeric_features.columns])
 X_test.loc[:, numeric_features.columns] = scaler.transform(X_test.loc[:, numeric_features.columns])
 
-###initialize Boruta
-forest = RandomForestRegressor(
-   n_jobs = -1, 
-   max_depth = 5
-)
-boruta = BorutaPy(
-   estimator = forest, 
-   n_estimators = 'auto',
-   max_iter = 500,
-   random_state=1
-)
 
-### fit Boruta (it accepts np.array, not pd.DataFrame)
-boruta.fit(np.array(X_train.loc[:, numeric_features.columns]), np.array(y_train))
-### print results
-green_area = X_train.loc[:, numeric_features.columns].columns[boruta.support_].to_list()
-blue_area = X_train.loc[:, numeric_features.columns].columns[boruta.support_weak_].to_list()
-print('features in the green area:', green_area)
-print('features in the blue area:', blue_area)
+def find_optimal_model(X_train):
+    
+    # Initialze the estimators
+    clf1 = RandomForestClassifier(random_state=42)
+    clf2 = SVC(probability=True, random_state=42)
+    clf3 = LogisticRegression(random_state=42,max_iter=10000)
+    clf4 = XGBClassifier(objective='binary:logistic', seed=42,use_label_encoder=False,eval_metric='logloss')
+
+    # Initiaze the hyperparameters for each dictionary
+    param1 = {}
+    param1['classifier__n_estimators'] = [50, 100]
+    param1['classifier__max_depth'] = [2,5]
+    param1['classifier__min_samples_split'] = [2, 70]
+    param1['classifier__min_samples_leaf'] = [1, 50]
+    param1['classifier'] = [clf1]
+
+    param2 = {}
+    param2['classifier__C'] = [2e-3, 2e7]
+    param2['classifier__gamma'] = [2e-7, 2e3]
+    param2['classifier__kernel'] = ['linear', 'rbf']
+    param2['classifier'] = [clf2]
+
+    param3 = {}
+    param3['classifier__C'] = [10**-2, 10**-1, 10**0, 10**1, 10**2]
+    param3['classifier__penalty'] = ['l1', 'l2']
+    param3['classifier'] = [clf3]
+
+    param4 = {}
+    param4['classifier__max_depth'] = [2,5]
+    param4['classifier__min_child_weight'] = [1,6]
+    param4['classifier__gamma'] = [0.1,10]
+    param4['classifier__reg_alpha'] = [0.1,20]
+    param4['classifier__reg_lambda'] = [0.001,100]
+    param4['classifier__learning_rate'] = [0.01,1]
+    param4['classifier__n_estimators'] = [10, 200]
+    param4['classifier'] = [clf4]
+
+    pipeline = Pipeline([('classifier', clf1)])
+    params = [param1, param2, param3, param4]
+
+    # Train the grid search model
+    gs = GridSearchCV(pipeline, params, cv=5, n_jobs=-1, scoring='f1').fit(X_train.loc[:, numeric_features.columns], y_train)
+
+    # Best performing model and its corresponding hyperparameters
+    print(gs.best_params_)
+
+    # f1 score for the best model
+    print(gs.best_score_)
+
+# ###initialize Boruta
+# forest = RandomForestRegressor(
+#    n_jobs = -1, 
+#    max_depth = 5
+# )
+# boruta = BorutaPy(
+#    estimator = forest, 
+#    n_estimators = 'auto',
+#    max_iter = 500,
+#    random_state=1
+# )
+
+# ### fit Boruta (it accepts np.array, not pd.DataFrame)
+# boruta.fit(np.array(X_train.loc[:, numeric_features.columns]), np.array(y_train))
+# ### print results
+# green_area = X_train.loc[:, numeric_features.columns].columns[boruta.support_].to_list()
+# blue_area = X_train.loc[:, numeric_features.columns].columns[boruta.support_weak_].to_list()
+# print('features in the green area:', green_area)
+# print('features in the blue area:', blue_area)
 
 # ### Instanciate a PCA object for the sake of easy visualisation
 # pca = PCA(n_components = 2)
@@ -95,3 +158,4 @@ print('features in the blue area:', blue_area)
 #               ncol=2, labelspacing=0.)
 # plt.tight_layout(pad=3)
 # plt.show()
+
