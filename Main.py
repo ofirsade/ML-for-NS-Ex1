@@ -99,12 +99,12 @@ def find_optimal_model(X_train, X_test, y_train, y_test):
     # f1 score for the best model
     print(gs.best_score_)
 
-    y_pred = gs.predict(X_test)
+    y_pred = gs.predict(X_test.loc[:, numeric_features.columns])
 
     print(f1_score(y_test, y_pred))
 
     disp = plot_confusion_matrix(gs,
-                             X_test,
+                             X_test.loc[:, numeric_features.columns],
                              y_test,
                              cmap=plt.cm.Greens,
                              normalize="true")
