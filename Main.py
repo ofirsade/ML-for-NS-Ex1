@@ -22,6 +22,9 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.neighbors import KNeighborsClassifier
 from xgboost import XGBClassifier
 from sklearn.metrics import *
+from sklearn.metrics import f1_score
+from sklearn.metrics import plot_confusion_matrix
+from sklearn.metrics import classification_report
 pd.options.mode.chained_assignment = None
 
 
@@ -47,8 +50,8 @@ X_train.loc[:, numeric_features.columns] = scaler.transform(X_train.loc[:, numer
 X_test.loc[:, numeric_features.columns] = scaler.transform(X_test.loc[:, numeric_features.columns])
 
 
-def find_optimal_model(X_train):
-    
+def find_optimal_model(X_train, X_test, y_train, y_test):
+
     # Initialze the estimators
     clf1 = RandomForestClassifier(random_state=42)
     clf2 = SVC(probability=True, random_state=42)
@@ -95,6 +98,21 @@ def find_optimal_model(X_train):
 
     # f1 score for the best model
     print(gs.best_score_)
+
+    y_pred = gs.predict(X_test)
+
+    print(f1_score(y_test, y_pred))
+
+    disp = plot_confusion_matrix(gs,
+                             X_test,
+                             y_test,
+                             cmap=plt.cm.Greens,
+                             normalize="true")
+    _ = disp.ax_.set_title(f"Confusion Matrix")
+
+    report = classification_report(y_test, y_pred)
+    print(report)
+
 
 # ###initialize Boruta
 # forest = RandomForestRegressor(
