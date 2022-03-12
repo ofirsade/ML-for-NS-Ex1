@@ -77,33 +77,33 @@ def find_optimal_model(X_train, X_test, y_train, y_test):
     # parameters for random forest
     param1 = {}
     param1['classifier__n_estimators'] = [50, 100]
-    #param1['classifier__max_depth'] = [2,5]
-    #param1['classifier__min_samples_split'] = [2, 70]
-    #param1['classifier__min_samples_leaf'] = [1, 50]
+    param1['classifier__max_depth'] = [2,5]
+    param1['classifier__min_samples_split'] = [2, 70]
+    param1['classifier__min_samples_leaf'] = [1, 50]
     param1['classifier'] = [clf1]
 
     # parameters for SVM
     param2 = {}
-    param2['classifier__C'] = [2e-3, 2e7]
-    #param2['classifier__gamma'] = [2e-7, 2e3]
-    #param2['classifier__kernel'] = ['linear', 'rbf']
+    param2['classifier__C'] = [0.1, 1, 10, 100, 1000] #[2e-1, 2e3]
+    param2['classifier__gamma'] = [1, 0.1, 0.01, 0.001, 0.0001] #[2e-1, 2e3]
+    param2['classifier__kernel'] = ['rbf',] #['linear', 'rbf']
     param2['classifier'] = [clf2]
-
+    
     # parameters for logistic regression
     param3 = {}
     param3['classifier__C'] = [10**-2, 10**-1, 10**0, 10**1, 10**2]
-    #param3['classifier__penalty'] = ['l1', 'l2']
+    param3['classifier__penalty'] = ['l1', 'l2']
     param3['classifier'] = [clf3]
 
     # parameters for XGboost
     param4 = {}
     param4['classifier__max_depth'] = [2,5]
-    #param4['classifier__min_child_weight'] = [1,6]
-    #param4['classifier__gamma'] = [0.1,10]
-    #param4['classifier__reg_alpha'] = [0.1,20]
-    #param4['classifier__reg_lambda'] = [0.001,100]
-    #param4['classifier__learning_rate'] = [0.01,1]
-    #param4['classifier__n_estimators'] = [10, 200]
+    param4['classifier__min_child_weight'] = [1,6]
+    param4['classifier__gamma'] = [0.1,10]
+    param4['classifier__reg_alpha'] = [0.1,20]
+    param4['classifier__reg_lambda'] = [0.001,100]
+    param4['classifier__learning_rate'] = [0.01,1]
+    param4['classifier__n_estimators'] = [10, 200]
     param4['classifier'] = [clf4]
 
     pipeline = Pipeline([('classifier', clf1)])
