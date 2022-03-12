@@ -15,11 +15,8 @@ from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.pipeline import Pipeline
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.neighbors import KNeighborsClassifier
 from xgboost import XGBClassifier
 from sklearn.metrics import *
 from sklearn.metrics import f1_score
@@ -72,9 +69,9 @@ def find_optimal_model(X_train, X_test, y_train, y_test):
     # Initialze the estimators for random forest, SVM, logistic regression and XGboost
     clf1 = RandomForestClassifier(random_state=42)
     clf2 = SVC(probability=True, random_state=42)
-    clf3 = LogisticRegression(random_state=42,max_iter=10000)
-    clf4 = XGBClassifier(objective='binary:logistic', seed=42,use_label_encoder=False,eval_metric='logloss')
-
+    clf3 = LogisticRegression(random_state=42, max_iter=10000)
+    clf4 = XGBClassifier(objective='binary:logistic', seed=42, use_label_encoder=False,eval_metric='logloss')
+    
     # Initiaze the hyperparameters for each dictionary
 
     # parameters for random forest
@@ -113,10 +110,12 @@ def find_optimal_model(X_train, X_test, y_train, y_test):
     params = [param1, param2, param3, param4]
 
     # Train the grid search model
-    gs = GridSearchCV(pipeline, params, cv=5, n_jobs=-1, scoring='f1').fit(X_train, y_train)
     print("Searching for the best model... \n")
+    gs = GridSearchCV(pipeline, params, cv=5, n_jobs=-1, scoring='f1', verbose=10).fit(X_train, y_train)
+    
+
     # printing best performing model and its corresponding hyperparameters
-    print("The best model is:\n ",gs.best_params_)
+    print("The best model is:\n ", gs.best_params_)
 
     # printing the f1 score for the best model on training data
     print("The f1 score of the model on training data:\n ", gs.best_score_)
@@ -155,6 +154,9 @@ forest = RandomForestRegressor(
    n_jobs = -1, 
    max_depth = 5
 )
+
+print("Running Boruta feature selection...\n")
+
 boruta = BorutaPy(
    estimator = forest, 
    n_estimators = 'auto',
@@ -164,7 +166,6 @@ boruta = BorutaPy(
 
 # fit Boruta (it accepts np.array, not pd.DataFrame)
 boruta.fit(np.array(X_train), np.array(y_train))
-print("Running Boruta feature selection...\n")
 
 # print results
 green_area = X.columns[boruta.support_].to_list()
