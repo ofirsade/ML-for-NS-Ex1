@@ -97,12 +97,12 @@ def find_optimal_model(X_train, X_test, y_train, y_test):
 
     # parameters for XGboost
     param4 = {}
-    param4['classifier__max_depth'] = [2,5]
-    param4['classifier__min_child_weight'] = [1,6]
-    param4['classifier__gamma'] = [0.1,10]
-    param4['classifier__reg_alpha'] = [0.1,20]
-    param4['classifier__reg_lambda'] = [0.001,100]
-    param4['classifier__learning_rate'] = [0.01,1]
+    param4['classifier__max_depth'] = [2, 5]
+    param4['classifier__min_child_weight'] = [1, 6]
+    param4['classifier__gamma'] = [0.1, 10]
+    param4['classifier__reg_alpha'] = [0.1, 20]
+    param4['classifier__reg_lambda'] = [0.001, 100]
+    param4['classifier__learning_rate'] = [0.01, 1]
     param4['classifier__n_estimators'] = [10, 200]
     param4['classifier'] = [clf4]
 
