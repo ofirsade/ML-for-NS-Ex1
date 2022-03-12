@@ -41,11 +41,13 @@ y = list(y[0])
 # removing empty columns 
 X = X.loc[:, X.any()]
 
-# finding numeric columns
+# droping non-numeric columns
 numeric_features = X.select_dtypes(include=np.number)
+X = X.loc[:, numeric_features.columns]
+
 
 # filling na's with columns means
-X.loc[:, numeric_features.columns] = X.loc[:, numeric_features.columns].apply(lambda l: l.fillna(l.mean()),axis=0)
+X = X.apply(lambda l: l.fillna(l.mean()), axis=0)
 
 # stratify splitting the data- test size of 0.1
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=1, stratify=y)
@@ -53,11 +55,11 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_
 scaler = StandardScaler()
 
 # get scaling parameters with the train sample exclusively, using the Scaler.fit() function
-scaler.fit(X_train.loc[:, numeric_features.columns])
+scaler.fit(X_train)
 
 # scale data using Scaler.transform()
-X_train.loc[:, numeric_features.columns] = scaler.transform(X_train.loc[:, numeric_features.columns])
-X_test.loc[:, numeric_features.columns] = scaler.transform(X_test.loc[:, numeric_features.columns])
+X_train = scaler.transform(X_train)
+X_test = scaler.transform(X_test)
 
 
 def find_optimal_model(X_train, X_test, y_train, y_test):
@@ -111,8 +113,8 @@ def find_optimal_model(X_train, X_test, y_train, y_test):
     params = [param1, param2, param3, param4]
 
     # Train the grid search model
-    gs = GridSearchCV(pipeline, params, cv=5, n_jobs=-1, scoring='f1').fit(X_train.loc[:, numeric_features.columns], y_train)
-
+    gs = GridSearchCV(pipeline, params, cv=5, n_jobs=-1, scoring='f1').fit(X_train, y_train)
+    print("Searching for the best model... \n")
     # printing best performing model and its corresponding hyperparameters
     print("The best model is:\n ",gs.best_params_)
 
@@ -120,7 +122,7 @@ def find_optimal_model(X_train, X_test, y_train, y_test):
     print("The f1 score of the model on training data:\n ", gs.best_score_)
 
     # predicting using the best model with X_test
-    y_pred = gs.predict(X_test.loc[:, numeric_features.columns])
+    y_pred = gs.predict(X_test)
 
     # printing the f1 score for the best model on test data
     print("The f1 score of the model on test data:\n ",f1_score(y_test, y_pred))
@@ -156,26 +158,28 @@ forest = RandomForestRegressor(
 boruta = BorutaPy(
    estimator = forest, 
    n_estimators = 'auto',
-   max_iter = 500,
+   max_iter = 50,
    random_state=1
 )
 
 # fit Boruta (it accepts np.array, not pd.DataFrame)
-boruta.fit(np.array(X_train.loc[:, numeric_features.columns]), np.array(y_train))
+boruta.fit(np.array(X_train), np.array(y_train))
+print("Running Boruta feature selection...\n")
+
 # print results
-green_area = X_train.loc[:, numeric_features.columns].columns[boruta.support_].to_list()
-blue_area = X_train.loc[:, numeric_features.columns].columns[boruta.support_weak_].to_list()
+green_area = X.columns[boruta.support_].to_list()
+blue_area = X.columns[boruta.support_weak_].to_list()
 print('features in the green area:\n', green_area)
 print('features in the blue area:\n', blue_area)
 
 # call transform() on X_train to filter it down to selected features
-#X_train_boruta = X_train[[green_area]]
+X_train_boruta = boruta.transform(X_train)
 
 # call transform() on X_test to filter it down to selected features
-#X_test_boruta = X_test[[green_area]]
+X_test_boruta = boruta.transform(X_test)
 
 # running the function on the dataset after Boruta feature selection
-#find_optimal_model(X_train_boruta, X_test_boruta, y_train, y_test)
+find_optimal_model(X_train_boruta, X_test_boruta, y_train, y_test)
 
 # ### Instanciate a PCA object for the sake of easy visualisation
 # pca = PCA(n_components = 2)
