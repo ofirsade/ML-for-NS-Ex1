@@ -123,7 +123,7 @@ def find_optimal_model(X_train, X_test, y_train, y_test):
     y_pred = gs.predict(X_test)
 
     # printing the f1 score for the best model on test data
-    print("The f1 score of the model on test data:\n ",f1_score(y_test, y_pred))
+    print("The f1 score of the model on test data:\n ", f1_score(y_test, y_pred))
 
     # printing classification report
     report = classification_report(y_test, y_pred)
