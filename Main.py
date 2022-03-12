@@ -158,7 +158,7 @@ forest = RandomForestRegressor(
 boruta = BorutaPy(
    estimator = forest, 
    n_estimators = 'auto',
-   max_iter = 50,
+   max_iter = 500,
    random_state=1
 )
 
