@@ -145,7 +145,7 @@ def find_optimal_model(X_train, X_test, y_train, y_test):
     plt.ylabel("True label", fontsize = 15)
     plt.show()
 
-    # calculatin feature permutation importance 
+    # calculating feature permutation importance 
     r = permutation_importance(gs, X_test, y_test, n_repeats=30, random_state=1)
 
     print("Feature permutation importance: \n")
@@ -157,10 +157,10 @@ def find_optimal_model(X_train, X_test, y_train, y_test):
 
     
 
-# running the function on the dataset
+### Running the function on the dataset
 find_optimal_model(X_train, X_test, y_train, y_test)
 
-#initialize Boruta
+### Initialize Boruta
 forest = RandomForestRegressor(
    n_jobs = -1, 
    max_depth = 5
@@ -175,25 +175,25 @@ boruta = BorutaPy(
    random_state=1
 )
 
-# fit Boruta (it accepts np.array, not pd.DataFrame)
+### Fit Boruta (it accepts np.array, not pd.DataFrame)
 boruta.fit(np.array(X_train), np.array(y_train))
 
-# print results
+### Print results
 green_area = X.columns[boruta.support_].to_list()
 blue_area = X.columns[boruta.support_weak_].to_list()
 print('features in the green area:\n', green_area)
 print('features in the blue area:\n', blue_area)
 
-# call transform() on X_train to filter it down to selected features
+### Call transform() on X_train to filter it down to selected features
 X_train_boruta = boruta.transform(X_train)
 
-# call transform() on X_test to filter it down to selected features
+### Call transform() on X_test to filter it down to selected features
 X_test_boruta = boruta.transform(X_test)
 
-# running the function on the dataset after Boruta feature selection
+### Running the function on the dataset after Boruta feature selection
 find_optimal_model(X_train_boruta, X_test_boruta, y_train, y_test)
 
-# ### Instanciate a PCA object for the sake of easy visualisation
+### Instanciate a PCA object for the sake of easy visualisation
 # pca = PCA(n_components = 2)
 
 # ### Fit and transform x to visualise inside a 2D feature space
