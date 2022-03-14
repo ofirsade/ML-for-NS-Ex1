@@ -25,36 +25,47 @@ from sklearn.metrics import classification_report
 from sklearn.inspection import permutation_importance
 pd.options.mode.chained_assignment = None
 
-# input path for X and y
+### Input path for X and y
 input_path_X = r'C:\Users\dell\Documents\ML final project\ML-for-NS-Ex1\X.xlsx'
 input_path_y = r'C:\Users\dell\Documents\ML final project\ML-for-NS-Ex1\y.xlsx'
 
-# loading X and y
+### Loading X and y
 X = pd.read_excel(input_path_X, index_col=0)
 y = pd.read_excel(input_path_y, index_col=0)
 
-# casting y to a list
-y = list(y[0])
-
-# removing empty columns 
+### Removing empty columns 
 X = X.loc[:, X.any()]
 
-# droping non-numeric columns
+### Droping non-numeric columns
 numeric_features = X.select_dtypes(include=np.number)
 X = X.loc[:, numeric_features.columns]
 
-# filling na's with columns means
+### Filling na's with columns means
 X = X.apply(lambda l: l.fillna(l.mean()), axis=0)
 
-# stratify splitting the data- test size of 0.1
+### Exploratory Data Analysis (EDA)
+data = X
+data.info()
+data.describe()
+data.head()
+
+data = y
+data.info()
+data.describe()
+data.head()
+
+### Casting y to a list
+y = list(y[0])
+
+### Stratify splitting the data- test size of 0.1
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=1, stratify=y)
 
 scaler = StandardScaler()
 
-# get scaling parameters with the train sample exclusively, using the Scaler.fit() function
+### Get scaling parameters with the train sample exclusively, using the Scaler.fit() function
 scaler.fit(X_train)
 
-# scale data using Scaler.transform()
+### Scale data using Scaler.transform()
 X_train = scaler.transform(X_train)
 X_test = scaler.transform(X_test)
 
@@ -66,15 +77,15 @@ def find_optimal_model(X_train, X_test, y_train, y_test):
     Then testing the optimal model on the test data, and plotting confusion matrix.
     """
 
-    # Initialze the estimators for random forest, SVM, logistic regression and XGboost
+    ### Initialze the estimators for random forest, SVM, logistic regression and XGboost
     clf1 = RandomForestClassifier(random_state=42)
     clf2 = SVC(probability=True, random_state=42, kernel="rbf")
     clf3 = LogisticRegression(random_state=42, max_iter=10000)
     clf4 = XGBClassifier(objective='binary:logistic', seed=42, use_label_encoder=False, eval_metric='logloss')
     
-    # Initiaze the hyperparameters for each dictionary
+    ### Initialize the hyperparameters for each dictionary
 
-    # parameters for random forest
+    ### Parameters for random forest
     param1 = {}
     param1['classifier__n_estimators'] = [50, 100]
     param1['classifier__max_depth'] = [2, 5]
@@ -82,20 +93,20 @@ def find_optimal_model(X_train, X_test, y_train, y_test):
     param1['classifier__min_samples_leaf'] = [1, 50]
     param1['classifier'] = [clf1]
 
-    # parameters for SVM
+    ### Parameters for SVM
     param2 = {}
     param2['classifier__C'] = [2e-3, 2e7]
     param2['classifier__gamma'] = [2e-7, 2e3]
     param2['classifier'] = [clf2]
 
-    # parameters for logistic regression
+    ### Parameters for logistic regression
     param3 = {}
     param3['classifier__C'] = [100, 10, 1.0, 0.1, 0.01]
     param3['classifier__penalty'] = ['l1', 'l2']
     param3['classifier__solver'] = ['saga', 'liblinear']
     param3['classifier'] = [clf3]
 
-    # parameters for XGboost
+    ### Parameters for XGboost
     param4 = {}
     param4['classifier__max_depth'] = [2, 5]
     param4['classifier__min_child_weight'] = [1, 6]
@@ -109,27 +120,27 @@ def find_optimal_model(X_train, X_test, y_train, y_test):
     pipeline = Pipeline([('classifier', clf1)])
     params = [param1, param2, param3, param4]
 
-    # Train the grid search model
+    ### Train the grid search model
     print("Searching for the best model... \n")
     gs = GridSearchCV(pipeline, params, cv=5, n_jobs=-1, scoring='f1', verbose=1).fit(X_train, y_train)
     
-    # printing best performing model and its corresponding hyperparameters
+    ### Printing best performing model and its corresponding hyperparameters
     print("The best model is:\n ", gs.best_params_)
 
-    # printing the f1 score for the best model on training data
+    ### Printing the f1 score for the best model on training data
     print("The f1 score of the model on training data:\n ", gs.best_score_)
 
-    # predicting using the best model with X_test
+    ### Predicting using the best model with X_test
     y_pred = gs.predict(X_test)
 
-    # printing the f1 score for the best model on test data
+    ### Printing the f1 score for the best model on test data
     print("The f1 score of the model on test data:\n ", f1_score(y_test, y_pred))
 
-    # printing classification report
+    ### Printing classification report
     report = classification_report(y_test, y_pred)
     print("classification report:\n ", report)
 
-    # plotting confusion matrix
+    ### Plotting confusion matrix
     cf_matrix = confusion_matrix(y_test, y_pred)
     group_names = ["True Neg","False Pos","False Neg","True Pos"]
     group_counts = ["{0:0.0f}".format(value) for value in
@@ -145,7 +156,7 @@ def find_optimal_model(X_train, X_test, y_train, y_test):
     plt.ylabel("True label", fontsize = 15)
     plt.show()
 
-    # calculating feature permutation importance 
+    ### Calculating feature permutation importance 
     r = permutation_importance(gs, X_test, y_test, n_repeats=30, random_state=1)
 
     print("Feature permutation importance: \n")
@@ -194,45 +205,45 @@ X_test_boruta = boruta.transform(X_test)
 find_optimal_model(X_train_boruta, X_test_boruta, y_train, y_test)
 
 ### Instanciate a PCA object for the sake of easy visualisation
-# pca = PCA(n_components = 2)
+pca = PCA(n_components = 2)
 
-# ### Fit and transform x to visualise inside a 2D feature space
-# X_vis = pca.fit_transform(X_train)
+### Fit and transform x to visualise inside a 2D feature space
+X_vis = pca.fit_transform(boruta_X_train)
 
-# ### Apply the random over-sampling
-# ada = ADASYN()
-# X_resampled, y_resampled = ada.fit_resample(X_train, y_train) ### This is the oversampled data that we want to use.
-# print(sorted(Counter(y_resampled).items()))
-# X_res_vis = pca.transform(X_resampled)
+### Apply the random over-sampling
+ada = ADASYN()
+X_resampled, y_resampled = ada.fit_resample(boruta_X_train, y_train) ### This is the oversampled data that we want to use.
+print(sorted(Counter(y_resampled).items()))
+find_optimal_model(X_resampled, boruta_X_test, y_resampled, y_test)
+X_res_vis = pca.transform(X_resampled)
 
-# ### Two subplots
-# f, (ax1, ax2) = plt.subplots(1, 2)
+### Two subplots
+f, (ax1, ax2) = plt.subplots(1, 2)
 
-# c0 = ax1.scatter(X_vis[y == 0, 0], X_vis[y == 0, 1], label="NON-SOUR",
-#                  alpha=0.5)
-# c1 = ax1.scatter(X_vis[y == 1, 0], X_vis[y == 1, 1], label="SOUR",
-#                  alpha=0.5)
-# ax1.set_title('Original set')
+c0 = ax1.scatter(X_vis[y == 0, 0], X_vis[y == 0, 1], label="NON-SOUR",
+              alpha=0.5)
+c1 = ax1.scatter(X_vis[y == 1, 0], X_vis[y == 1, 1], label="SOUR",
+              alpha=0.5)
+ax1.set_title('Original set')
 
-# ax2.scatter(X_res_vis[y_resampled == 0, 0], X_res_vis[y_resampled == 0, 1],
-#             label="NON-SOUR", alpha=.5)
-# ax2.scatter(X_res_vis[y_resampled == 1, 0], X_res_vis[y_resampled == 1, 1],
-#             label="SOUR", alpha=.5)
-# ax2.set_title('ADASYN')
+ax2.scatter(X_res_vis[y_resampled == 0, 0], X_res_vis[y_resampled == 0, 1],
+         label="NON-SOUR", alpha=.5)
+ax2.scatter(X_res_vis[y_resampled == 1, 0], X_res_vis[y_resampled == 1, 1],
+         label="SOUR", alpha=.5)
+ax2.set_title('ADASYN')
 
-# ### Plotting
-# for ax in (ax1, ax2):
-#     ax.spines['top'].set_visible(False)
-#     ax.spines['right'].set_visible(False)
-#     ax.get_xaxis().tick_bottom()
-#     ax.get_yaxis().tick_left()
-#     ax.spines['left'].set_position(('outward', 10))
-#     ax.spines['bottom'].set_position(('outward', 10))
-#     ax.set_xlim([-6, 8])
-#     ax.set_ylim([-6, 6])
+### Plotting
+for ax in (ax1, ax2):
+ ax.spines['top'].set_visible(False)
+ ax.spines['right'].set_visible(False)
+ ax.get_xaxis().tick_bottom()
+ ax.get_yaxis().tick_left()
+ ax.spines['left'].set_position(('outward', 10))
+ ax.spines['bottom'].set_position(('outward', 10))
+ ax.set_xlim([-6, 8])
+ ax.set_ylim([-6, 6])
 
-# plt.figlegend((c0, c1), ('NON-SOUR', 'SOUR'), loc='lower center',
-#               ncol=2, labelspacing=0.)
-# plt.tight_layout(pad=3)
-# plt.show()
-
+plt.figlegend((c0, c1), ('NON-SOUR', 'SOUR'), loc='lower center',
+           ncol=2, labelspacing=0.)
+plt.tight_layout(pad=3)
+plt.show()
